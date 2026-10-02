@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app_theme.dart';
 import 'auth_service.dart';
+import 'forgot_password_page.dart';
 import 'register_page.dart';
 import 'validators.dart';
+import 'verify_email_page.dart';
 import 'widgets/loading_button.dart';
 
 class LoginPage extends StatefulWidget {
@@ -60,10 +62,16 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _resend() async {
+  // Notun code pathiye verify page-e niye jabe
+  Future<void> _sendCodeAndVerify() async {
+    final email = _emailController.text.trim();
     try {
-      await _authService.resendVerification(_emailController.text.trim());
-      _showMessage('Verification email sent. Check your inbox.');
+      await _authService.resendVerification(email);
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => VerifyEmailPage(email: email)),
+      );
     } on AuthException catch (e) {
       _showMessage(e.message);
     }
@@ -126,14 +134,26 @@ class _LoginPageState extends State<LoginPage> {
                     validator: (value) =>
                         (value == null || value.isEmpty) ? 'Please enter your password' : null,
                   ),
-                  const SizedBox(height: 26),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ForgotPasswordPage()),
+                        );
+                      },
+                      child: const Text('Forgot password?'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   LoadingButton(label: 'Log In', isLoading: _isLoading, onPressed: _login),
                   if (_needsVerification)
                     Padding(
                       padding: const EdgeInsets.only(top: 6),
                       child: TextButton(
-                        onPressed: _resend,
-                        child: const Text('Resend verification email'),
+                        onPressed: _sendCodeAndVerify,
+                        child: const Text('Send verification code'),
                       ),
                     ),
                   const SizedBox(height: 10),
