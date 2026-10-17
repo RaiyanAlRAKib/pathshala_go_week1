@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "D:/PathshalaGo/pathshala_go_1/windows"
+    "cmake.sourceDirectory": "D:/PathshalaGo/pathshala_go_1/windows",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
